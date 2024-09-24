@@ -22,3 +22,24 @@ exports.registrovatPost = (dotaz, odpoved) => {
 
     odpoved.redirect('/prihlaseni.html');
 };
+
+exports.prihlasit = (dotaz, odpoved) => {
+    return odpoved.redirect('/prihlaseni.html');
+};
+
+exports.prihlasitPost = (dotaz, odpoved) => {
+    let jmeno = dotaz.body.jmeno.trim();
+    let heslo = dotaz.body.heslo.trim();
+
+    if(jmeno == '' || heslo == '') {
+        return odpoved.redirect('/uzivatel/prihlasit');
+    } else if(!model.existuje(jmeno)) {
+        return odpoved.redirect('/uzivatel/prihlasit');
+    } else if(!model.overit(jmeno, heslo)) {
+        return odpoved.redirect('/uzivatel/prihlasit');
+    }
+
+    dotaz.session.prihlasen = jmeno;
+
+    return odpoved.redirect('/profil.html');
+};

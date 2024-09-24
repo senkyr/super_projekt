@@ -10,5 +10,8 @@ const controller = require('../controllers/uzivatelController');
 router.get('/registrovat', controller.registrovat);
 router.post('/registrovat', controller.registrovatPost);
 
+router.get('/prihlasit', controller.prihlasit);
+router.post('/prihlasit', controller.prihlasitPost);
+
 // export routeru ze souboru ven
 module.exports = router;

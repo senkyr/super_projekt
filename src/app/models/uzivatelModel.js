@@ -29,3 +29,19 @@ exports.pridat = (jmeno, heslo) => {
 
     db.set('next_id', next_id + 1);
 };
+
+exports.overit = (jmeno, heslo) => {
+    let data = db.JSON();
+
+    delete data['next_id'];
+
+    for(let id in data) {
+        if(data[id]['jmeno'] == jmeno) {
+            if(data[id]['heslo'] == heslo) {
+                return true;
+            }
+        }
+    }
+
+    return false;
+};
