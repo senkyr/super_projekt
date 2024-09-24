@@ -1,3 +1,4 @@
+// nacteni kodu modelu
 const model = require('../models/uzivatelModel');
 
 exports.registrovat = (dotaz, odpoved) => {
