@@ -7,13 +7,7 @@ const app = express();
 // umisteni statickych souboru (HTML, CSS, obrazky, ...)
 app.use(express.static('./www'));
 
-// funkce obsluhujici HTTP dotazy
-app.get('/hello', function (req, res) {
-  res.send('Hello World!');
-});
-
-app.get('/bye', function(req, res) {
-    res.send('Good bye!');
-});
+// odchyceni URL tykajici se aplikace jako takove
+app.use('/aplikace', require('./routers/aplikaceRouter'));
 
 module.exports = app;
