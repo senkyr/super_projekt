@@ -45,5 +45,7 @@ exports.prihlasitPost = (dotaz, odpoved) => {
 };
 
 exports.profil = (dotaz, odpoved) => {
-    odpoved.render('uzivatel/profil');
+    odpoved.render('uzivatel/profil', {
+        jmeno: dotaz.session.prihlasen,
+    });
 };

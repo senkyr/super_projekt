@@ -23,7 +23,7 @@ app.use(session({
   secret: SECRET,
   resave: false,
   saveUninitialized: true,
-  cookie: { secure: true }
+  cookie: { secure: false }
 }));
 
 // umisteni statickych souboru (HTML, CSS, obrazky, ...)
