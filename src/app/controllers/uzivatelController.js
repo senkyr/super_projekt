@@ -49,3 +49,9 @@ exports.profil = (dotaz, odpoved) => {
         jmeno: dotaz.session.prihlasen,
     });
 };
+
+exports.odhlasit = (dotaz, odpoved) => {
+    dotaz.session.destroy();
+
+    odpoved.redirect('/aplikace/domov');
+};

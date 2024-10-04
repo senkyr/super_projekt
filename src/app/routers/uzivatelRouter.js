@@ -15,5 +15,7 @@ router.post('/prihlasit', controller.prihlasitPost);
 
 router.get('/profil', controller.profil);
 
+router.post('/odhlasit', controller.odhlasit);
+
 // export routeru ze souboru ven
 module.exports = router;
