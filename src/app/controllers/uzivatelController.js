@@ -2,7 +2,7 @@
 const model = require('../models/uzivatelModel');
 
 exports.registrovat = (dotaz, odpoved) => {
-    return odpoved.redirect('/registrace.html');
+    odpoved.render('uzivatel/registrace');
 };
 
 exports.registrovatPost = (dotaz, odpoved) => {
@@ -24,7 +24,7 @@ exports.registrovatPost = (dotaz, odpoved) => {
 };
 
 exports.prihlasit = (dotaz, odpoved) => {
-    return odpoved.redirect('/prihlaseni.html');
+    odpoved.render('uzivatel/prihlaseni');
 };
 
 exports.prihlasitPost = (dotaz, odpoved) => {
@@ -41,5 +41,9 @@ exports.prihlasitPost = (dotaz, odpoved) => {
 
     dotaz.session.prihlasen = jmeno;
 
-    return odpoved.redirect('/profil.html');
+    return odpoved.redirect('/uzivatel/profil');
+};
+
+exports.profil = (dotaz, odpoved) => {
+    odpoved.render('uzivatel/profil');
 };

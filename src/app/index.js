@@ -11,6 +11,10 @@ const { SECRET } = process.env;
 // vytvoreni Express aplikace
 const app = express();
 
+// nastaveni sablonovaciho nastroje
+app.set('view engine', 'ejs');
+app.set('views', './app/views');
+
 // prijimani dat z formularu
 app.use(express.urlencoded({ extended: false }));
 
@@ -29,5 +33,8 @@ app.use(express.static('./www'));
 app.use('/aplikace', require('./routers/aplikaceRouter'));
 // odchyceni URL tykajicich se uzivatele
 app.use('/uzivatel', require('./routers/uzivatelRouter'));
+
+// odchyceni vsech ostatnich URL
+app.get('*', (dotaz, odpoved) => odpoved.redirect('/aplikace/chyba'));
 
 module.exports = app;

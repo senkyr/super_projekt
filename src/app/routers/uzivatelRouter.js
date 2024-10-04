@@ -13,5 +13,7 @@ router.post('/registrovat', controller.registrovatPost);
 router.get('/prihlasit', controller.prihlasit);
 router.post('/prihlasit', controller.prihlasitPost);
 
+router.get('/profil', controller.profil);
+
 // export routeru ze souboru ven
 module.exports = router;
