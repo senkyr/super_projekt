@@ -1,16 +1,8 @@
-<!DOCTYPE html>
-<html lang="cs">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/css/style.css" />
-    <title>Profil</title>
-</head>
-<body>
-    <h1>Profil</h1>
-    <p>Vítejte, <b><%= jmeno %>!</b></p>
-    <form action="/uzivatel/odhlasit" method="post">
-        <input type="submit" value="Odhlásit" />
-    </form>
-</body>
-</html>
+<%- include('../_layout/hlavicka') %>
+
+<p>Vítejte, <b><%= jmeno %>!</b></p>
+<form action="/uzivatel/odhlasit" method="post">
+    <input type="submit" value="Odhlásit" />
+</form>
+
+<%- include('../_layout/paticka') %>

@@ -2,7 +2,10 @@
 const model = require('../models/uzivatelModel');
 
 exports.registrovat = (dotaz, odpoved) => {
-    odpoved.render('uzivatel/registrace');
+    odpoved.render('uzivatel/registrace', {
+        nadpis: "Registrace",
+        jmeno: dotaz.session.prihlasen,
+    });
 };
 
 exports.registrovatPost = (dotaz, odpoved) => {
@@ -24,7 +27,10 @@ exports.registrovatPost = (dotaz, odpoved) => {
 };
 
 exports.prihlasit = (dotaz, odpoved) => {
-    odpoved.render('uzivatel/prihlaseni');
+    odpoved.render('uzivatel/prihlaseni', {
+        nadpis: "Přihlášení",
+        jmeno: dotaz.session.prihlasen,
+    });
 };
 
 exports.prihlasitPost = (dotaz, odpoved) => {
@@ -46,6 +52,7 @@ exports.prihlasitPost = (dotaz, odpoved) => {
 
 exports.profil = (dotaz, odpoved) => {
     odpoved.render('uzivatel/profil', {
+        nadpis: 'Profil',
         jmeno: dotaz.session.prihlasen,
     });
 };

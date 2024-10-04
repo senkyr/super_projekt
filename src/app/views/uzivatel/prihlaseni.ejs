@@ -1,17 +1,9 @@
-<!DOCTYPE html>
-<html lang="cs">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/css/style.css" />
-    <title>Přihlášení</title>
-</head>
-<body>
-    <h1>Přihlášení</h1>
-    <form action="/uzivatel/prihlasit" method="post">
-		<input type="text" name="jmeno" placeholder="Jméno..." /><br />
-		<input type="password" name="heslo" placeholder="Heslo..." /><br />
-		<input type="submit" value="Přihlásit" />
-	</form>
-</body>
-</html>
+<%- include('../_layout/hlavicka') %>
+
+<form action="/uzivatel/prihlasit" method="post">
+    <input type="text" name="jmeno" placeholder="Jméno..." /><br />
+    <input type="password" name="heslo" placeholder="Heslo..." /><br />
+    <input type="submit" value="Přihlásit" />
+</form>
+
+<%- include('../_layout/paticka') %>
