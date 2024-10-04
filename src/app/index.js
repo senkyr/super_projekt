@@ -34,7 +34,9 @@ app.use('/aplikace', require('./routers/aplikaceRouter'));
 // odchyceni URL tykajicich se uzivatele
 app.use('/uzivatel', require('./routers/uzivatelRouter'));
 
-// odchyceni vsech ostatnich URL
+// odchyceni defaultnich URL
+app.get(['/', '/index', '/index.html'], (dotaz, odpoved) => odpoved.redirect('/aplikace/domov'));
+// odchyceni vsech ostatnich URL --> chyba
 app.get('*', (dotaz, odpoved) => odpoved.redirect('/aplikace/chyba'));
 
 module.exports = app;
