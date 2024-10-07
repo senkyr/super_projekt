@@ -4,6 +4,8 @@ Pro spuštění aplikace je třeba mít nainstalované běhové prostředí [Nod
 
 Závislosti doinstalujete do svojí fyzické kopie spuštěním příkazu `npm install` ve složce `src`.
 
+Do repozitáře je třeba ručně přidat složku `data` pro datové soubory (nejsou sledovány Gitem).
+
 Pro využívání externí konfigurace musí složka `src` obsahovat soubor `.env` ve formátu
 
 >KLIC=HODNOTA
