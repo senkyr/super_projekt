@@ -23,7 +23,7 @@ exports.registrovatPost = (dotaz, odpoved) => {
 
     model.pridat(jmeno, heslo);
 
-    odpoved.redirect('/prihlaseni.html');
+    odpoved.redirect('/uzivatel/prihlasit');
 };
 
 exports.prihlasit = (dotaz, odpoved) => {
