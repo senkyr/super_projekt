@@ -1,3 +1,5 @@
+// nacteni kodu z baliku bcryptjs
+const bcrypt = require('bcryptjs');
 // nacteni kodu z baliku simple-json-db
 const jsondb = require('simple-json-db');
 // napojeni na soubor s daty
@@ -23,9 +25,11 @@ exports.existuje = (jmeno) => {
 };
 
 exports.pridat = (jmeno, heslo) => {
+    const hash = bcrypt.hashSync(heslo, 10);
+
     let next_id = db.get('next_id');
 
-    db.set(next_id, {jmeno, heslo});
+    db.set(next_id, {jmeno, heslo: hash});
 
     db.set('next_id', next_id + 1);
 };
@@ -37,7 +41,7 @@ exports.overit = (jmeno, heslo) => {
 
     for(let id in data) {
         if(data[id]['jmeno'] == jmeno) {
-            if(data[id]['heslo'] == heslo) {
+            if(bcrypt.compareSync(heslo, data[id]['heslo'])) {
                 return true;
             }
         }
