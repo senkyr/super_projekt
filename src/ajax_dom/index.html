@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manipulace s DOM</title>
+</head>
+<body>
+    <button id="tlacitko" onclick="klik()">
+        Stiskni mě!
+    </button>
+    <hr />
+    <input id="text" type="text" onkeydown="generovat()" onchange="generovat()" />
+    <input id="cislo" type="number" onchange="generovat()" />
+    <div id="vysledek"></div>
+    <hr />
+    <div id="lorem" onmouseenter="darkMode()" onmouseleave="lightMode()">Lorem ipsum</div>
+
+    <script src="index.js"></script>
+</body>
+</html>
