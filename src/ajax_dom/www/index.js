@@ -24,3 +24,23 @@ function lightMode() {
     document.getElementById('lorem').style.color = 'black';
     document.getElementById('lorem').style.backgroundColor = 'white';
 }
+
+function ajaj() {
+    fetch('/hello')
+    .then(odpoved => odpoved.json())
+    .then(data => {
+        document.getElementById('hello').innerHTML = data.hello;
+    });
+}
+
+function odeslat() {
+    const data = document.getElementById('vstup').value;
+
+    fetch('/prijem', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ data })
+    });
+}
