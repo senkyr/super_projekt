@@ -1,3 +1,6 @@
+// www/script.js
+// Jednoducha SPA pro mikroblog, ktera obsluhuje udalosti a vola REST API
+
 // Funkce pro zobrazeni prislusne sekce
 function zobrazSekci(idSekce) {
     // Skryjeme vsechny sekce
@@ -20,7 +23,9 @@ function aktualizujNavigaci(prihlasen) {
 
 // Funkce pro nacteni vsech prispevku
 function nactiVsechnyPrispevky() {
-    fetch('/api/prispevky')
+    fetch('/api/prispevky', {
+        credentials: 'same-origin'
+    })
     .then(response => response.json())
     .then(data => {
         let vypis = document.getElementById('vypisPrispevku');
@@ -40,7 +45,9 @@ function nactiVsechnyPrispevky() {
 
 // Funkce pro nacteni prispevku prihlaseneho uzivatele (profil)
 function nactiMujProfil() {
-    fetch('/api/profil')
+    fetch('/api/profil', {
+        credentials: 'same-origin'
+    })
     .then(response => {
         if (response.status === 401) {
             return { chyba: "Uzivatel neni prihlaseny" };
@@ -73,7 +80,9 @@ document.getElementById('btnPrihlaseni').addEventListener('click', function() {
 });
 
 document.getElementById('btnOdhlaseni').addEventListener('click', function() {
-    fetch('/api/odhlaseni')
+    fetch('/api/odhlaseni', {
+        credentials: 'same-origin'
+    })
     .then(response => response.json())
     .then(data => {
         alert(data.zprava);
@@ -103,6 +112,7 @@ document.getElementById('formRegistrace').addEventListener('submit', function(e)
     const heslo = document.getElementById('regHeslo').value;
     fetch('/api/registrace', {
         method: 'POST',
+        credentials: 'same-origin',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ jmeno: jmeno, heslo: heslo })
     })
@@ -120,6 +130,7 @@ document.getElementById('formPrihlaseni').addEventListener('submit', function(e)
     const heslo = document.getElementById('loginHeslo').value;
     fetch('/api/prihlaseni', {
         method: 'POST',
+        credentials: 'same-origin',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ jmeno: jmeno, heslo: heslo })
     })
@@ -142,6 +153,7 @@ document.getElementById('formNovyPrispevek').addEventListener('submit', function
     const obsah = document.getElementById('prispevekObsah').value;
     fetch('/api/prispevky', {
         method: 'POST',
+        credentials: 'same-origin',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ obsah: obsah })
     })
