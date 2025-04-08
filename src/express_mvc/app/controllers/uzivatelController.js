@@ -1,3 +1,4 @@
+// uzivatelController.js
 // nacteni kodu modelu
 const model = require('../models/uzivatelModel');
 
@@ -17,13 +18,22 @@ exports.registrovatPost = async (dotaz, odpoved) => {
         return odpoved.redirect('/uzivatel/registrovat');
     } else if(heslo != kontrola) {
         return odpoved.redirect('/uzivatel/registrovat');
-    } else if(model.existuje(jmeno)) {
-        return odpoved.redirect('/uzivatel/registrovat');
     }
-
-    model.pridat(jmeno, heslo);
-
-    odpoved.redirect('/uzivatel/prihlasit');
+    
+    try {
+        // Kontrola existence uživatele - nyní s await
+        const existuje = await model.existuje(jmeno);
+        if(existuje) {
+            return odpoved.redirect('/uzivatel/registrovat');
+        }
+        
+        // Přidání uživatele - nyní s await
+        await model.pridat(jmeno, heslo);
+        odpoved.redirect('/uzivatel/prihlasit');
+    } catch (err) {
+        console.error('Chyba při registraci:', err);
+        odpoved.redirect('/uzivatel/registrovat');
+    }
 };
 
 exports.prihlasit = (dotaz, odpoved) => {
@@ -39,15 +49,27 @@ exports.prihlasitPost = async (dotaz, odpoved) => {
 
     if(jmeno == '' || heslo == '') {
         return odpoved.redirect('/uzivatel/prihlasit');
-    } else if(!model.existuje(jmeno)) {
-        return odpoved.redirect('/uzivatel/prihlasit');
-    } else if(!model.overit(jmeno, heslo)) {
-        return odpoved.redirect('/uzivatel/prihlasit');
     }
-
-    dotaz.session.prihlasen = jmeno;
-
-    return odpoved.redirect('/uzivatel/profil');
+    
+    try {
+        // Kontrola existence uživatele - nyní s await
+        const existuje = await model.existuje(jmeno);
+        if(!existuje) {
+            return odpoved.redirect('/uzivatel/prihlasit');
+        }
+        
+        // Ověření hesla - nyní s await
+        const overeno = await model.overit(jmeno, heslo);
+        if(!overeno) {
+            return odpoved.redirect('/uzivatel/prihlasit');
+        }
+        
+        dotaz.session.prihlasen = jmeno;
+        return odpoved.redirect('/uzivatel/profil');
+    } catch (err) {
+        console.error('Chyba při přihlášení:', err);
+        odpoved.redirect('/uzivatel/prihlasit');
+    }
 };
 
 exports.profil = (dotaz, odpoved) => {
@@ -59,6 +81,5 @@ exports.profil = (dotaz, odpoved) => {
 
 exports.odhlasit = (dotaz, odpoved) => {
     dotaz.session.destroy();
-
     odpoved.redirect('/aplikace/domov');
 };
