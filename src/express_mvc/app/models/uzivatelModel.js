@@ -1,51 +1,62 @@
 // nacteni kodu z baliku bcryptjs
 const bcrypt = require('bcryptjs');
-// nacteni kodu z baliku simple-json-db
-const jsondb = require('simple-json-db');
-// napojeni na soubor s daty
-const db = new jsondb('./data/uzivatele.json');
+// nacteni kodu pro pripojeni k PostgreSQL
+const { Pool } = require('pg');
 
-// inicializace polozky next_id v prazdne databazi
-if(!db.has('next_id')) {
-    db.set('next_id', 1);
-}
-
-exports.existuje = (jmeno) => {
-    let data = db.JSON();
-
-    delete data['next_id'];
-
-    for(let id in data) {
-        if(data[id]['jmeno'] == jmeno) {
-            return true;
-        }
+// Konfigurace připojení k databázi (z proměnných prostředí)
+const pool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    ssl: {
+        rejectUnauthorized: false // potřebné na některých hostingových platformách jako je Render
     }
+});
 
-    return false;
+// Vytvoření spojení s databází a chybové hlášení
+pool.on('error', (err) => {
+    console.error('Neočekávaná chyba na PostgreSQL klientovi', err);
+    process.exit(-1);
+});
+
+exports.existuje = async (jmeno) => {
+    try {
+        const result = await pool.query(
+            'SELECT * FROM uzivatele WHERE jmeno = $1',
+            [jmeno]
+        );
+        return result.rows.length > 0;
+    } catch (err) {
+        console.error('Chyba při kontrole existence uživatele:', err);
+        throw err;
+    }
 };
 
-exports.pridat = (jmeno, heslo) => {
-    const hash = bcrypt.hashSync(heslo, 10);
-
-    let next_id = db.get('next_id');
-
-    db.set(next_id, {jmeno, heslo: hash});
-
-    db.set('next_id', next_id + 1);
+exports.pridat = async (jmeno, heslo) => {
+    try {
+        const hash = bcrypt.hashSync(heslo, 10);
+        await pool.query(
+            'INSERT INTO uzivatele (jmeno, heslo) VALUES ($1, $2)',
+            [jmeno, hash]
+        );
+    } catch (err) {
+        console.error('Chyba při přidání uživatele:', err);
+        throw err;
+    }
 };
 
-exports.overit = (jmeno, heslo) => {
-    let data = db.JSON();
-
-    delete data['next_id'];
-
-    for(let id in data) {
-        if(data[id]['jmeno'] == jmeno) {
-            if(bcrypt.compareSync(heslo, data[id]['heslo'])) {
-                return true;
-            }
+exports.overit = async (jmeno, heslo) => {
+    try {
+        const result = await pool.query(
+            'SELECT heslo FROM uzivatele WHERE jmeno = $1',
+            [jmeno]
+        );
+        
+        if (result.rows.length === 0) {
+            return false;
         }
+        
+        return bcrypt.compareSync(heslo, result.rows[0].heslo);
+    } catch (err) {
+        console.error('Chyba při ověření uživatele:', err);
+        throw err;
     }
-
-    return false;
 };
