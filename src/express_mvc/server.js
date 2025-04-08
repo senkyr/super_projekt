@@ -12,6 +12,6 @@ const { PORT } = process.env;
 const server = http.createServer(app);
 
 // spusteni serveru
-server.listen(PORT, 'localhost', () => {
+server.listen(PORT, () => {
     console.log(`Server běží na http://localhost:${PORT}...`);
 });
