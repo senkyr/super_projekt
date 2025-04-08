@@ -8,7 +8,7 @@ exports.registrovat = (dotaz, odpoved) => {
     });
 };
 
-exports.registrovatPost = (dotaz, odpoved) => {
+exports.registrovatPost = async (dotaz, odpoved) => {
     let jmeno = dotaz.body.jmeno.trim();
     let heslo = dotaz.body.heslo.trim();
     let kontrola = dotaz.body.heslo_kontrola.trim();
@@ -33,7 +33,7 @@ exports.prihlasit = (dotaz, odpoved) => {
     });
 };
 
-exports.prihlasitPost = (dotaz, odpoved) => {
+exports.prihlasitPost = async (dotaz, odpoved) => {
     let jmeno = dotaz.body.jmeno.trim();
     let heslo = dotaz.body.heslo.trim();
 
