@@ -3,7 +3,7 @@ const bcrypt = require('bcryptjs');
 // nacteni kodu z baliku simple-json-db
 const jsondb = require('simple-json-db');
 // napojeni na soubor s daty
-const db = new jsondb('../data/uzivatele.json');
+const db = new jsondb('./data/uzivatele.json');
 
 // inicializace polozky next_id v prazdne databazi
 if(!db.has('next_id')) {
