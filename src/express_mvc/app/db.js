@@ -17,38 +17,38 @@ dbrouter.get('/init', async (req, res) => {
       useUnifiedTopology: true
     });
 
-    // Definice schématu uživatele (stejné jako v uzivatelModel)
-    const uzivatelSchema = new mongoose.Schema({
-      jmeno: {
-        type: String,
-        required: true,
-        unique: true,
-      },
-      heslo: {
-        type: String,
-        required: true,
-      }
-    });
-
-    // Vytvoření nebo resetování kolekce
+    // Kontrola, zda model již existuje
+    let Uzivatel;
     try {
-      // Pokud kolekce již existuje, vyčistíme ji
-      await mongoose.connection.dropCollection('uzivatels');
+      // Zkusíme získat existující model
+      Uzivatel = mongoose.model('Uzivatel');
+      
+      // Vyčistíme kolekci, ale zachováme model
+      await Uzivatel.deleteMany({});
       console.log('Existující kolekce byla resetována');
     } catch (err) {
-      // Kolekce neexistuje, pokračujeme dál
-      console.log('Kolekce ještě neexistovala, bude vytvořena');
-    }
+      // Model neexistuje, vytvoříme ho
+      const uzivatelSchema = new mongoose.Schema({
+        jmeno: {
+          type: String,
+          required: true,
+          unique: true,
+        },
+        heslo: {
+          type: String,
+          required: true,
+        }
+      });
 
-    // Registrace modelu
-    mongoose.model('Uzivatel', uzivatelSchema);
+      // Registrace modelu
+      Uzivatel = mongoose.model('Uzivatel', uzivatelSchema);
+      console.log('Model byl vytvořen');
+    }
 
     res.send('Databáze MongoDB byla úspěšně inicializována! Kolekce uživatelů je připravena.');
   } catch (err) {
     console.error('Chyba při inicializaci MongoDB:', err);
     res.status(500).send(`Chyba při inicializaci MongoDB: ${err.message}`);
-  } finally {
-    // Ponecháme připojení otevřené pro další požadavky
   }
 });
 
