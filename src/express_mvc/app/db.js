@@ -1,65 +1,78 @@
 const express = require('express');
 const dbrouter = express.Router();
-
-// nacteni modulů pro práci s PostgreSQL a souborovým systémem
-const { Pool } = require('pg');
-const fs = require('fs');
-const path = require('path');
-
+const mongoose = require('mongoose');
 require('dotenv').config();
-const { DATABASE_URL } = process.env;
 
 // Cesta pro inicializaci databáze
 dbrouter.get('/init', async (req, res) => {
-  // Kontrola, zda existuje proměnná DATABASE_URL
-  if (!DATABASE_URL) {
-    return res.status(500).send('Chyba: DATABASE_URL není nastavená. Prosím nastavte připojovací řetězec k databázi.');
+  // Kontrola, zda existuje proměnná MONGODB_URI
+  if (!process.env.MONGODB_URI) {
+    return res.status(500).send('Chyba: MONGODB_URI není nastavená. Prosím nastavte připojovací řetězec k MongoDB.');
   }
 
-  // Vytvoření připojení k databázi
-  const pool = new Pool({
-    connectionString: DATABASE_URL,
-    ssl: {
-      rejectUnauthorized: false // potřebné pro Render.com
-    }
-  });
-
   try {
-    // Načtení SQL skriptu
-    const sqlPath = path.join(__dirname, '..', 'init.sql');
-    const sqlScript = fs.readFileSync(sqlPath, 'utf8');
-    
-    // Spuštění celého skriptu najednou
-    await pool.query(sqlScript);
-    
-    await pool.end(); // Ukončení spojení
-    
-    res.send('Databáze byla úspěšně inicializována! Tabulka uživatelů je připravena.');
+    // Připojení k MongoDB
+    await mongoose.connect(process.env.MONGODB_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true
+    });
+
+    // Definice schématu uživatele (stejné jako v uzivatelModel)
+    const uzivatelSchema = new mongoose.Schema({
+      jmeno: {
+        type: String,
+        required: true,
+        unique: true,
+      },
+      heslo: {
+        type: String,
+        required: true,
+      }
+    });
+
+    // Vytvoření nebo resetování kolekce
+    try {
+      // Pokud kolekce již existuje, vyčistíme ji
+      await mongoose.connection.dropCollection('uzivatels');
+      console.log('Existující kolekce byla resetována');
+    } catch (err) {
+      // Kolekce neexistuje, pokračujeme dál
+      console.log('Kolekce ještě neexistovala, bude vytvořena');
+    }
+
+    // Registrace modelu
+    mongoose.model('Uzivatel', uzivatelSchema);
+
+    res.send('Databáze MongoDB byla úspěšně inicializována! Kolekce uživatelů je připravena.');
   } catch (err) {
-    console.error('Chyba při inicializaci databáze:', err);
-    res.status(500).send(`Chyba při inicializaci databáze: ${err.message}`);
+    console.error('Chyba při inicializaci MongoDB:', err);
+    res.status(500).send(`Chyba při inicializaci MongoDB: ${err.message}`);
+  } finally {
+    // Ponecháme připojení otevřené pro další požadavky
   }
 });
 
 // Cesta pro zobrazení uživatelů z databáze
 dbrouter.get('/scan', async (req, res) => {
-  // Kontrola, zda existuje proměnná DATABASE_URL
-  if (!DATABASE_URL) {
-    return res.status(500).send('Chyba: DATABASE_URL není nastavená. Prosím nastavte připojovací řetězec k databázi.');
+  // Kontrola, zda existuje proměnná MONGODB_URI
+  if (!process.env.MONGODB_URI) {
+    return res.status(500).send('Chyba: MONGODB_URI není nastavená. Prosím nastavte připojovací řetězec k MongoDB.');
   }
 
-  // Vytvoření připojení k databázi
-  const pool = new Pool({
-    connectionString: DATABASE_URL,
-    ssl: {
-      rejectUnauthorized: false // potřebné pro Render.com
-    }
-  });
-
   try {
-    // SQL dotaz pro získání všech uživatelů z tabulky
-    const query = 'SELECT id, jmeno, heslo FROM uzivatele ORDER BY id';
-    const result = await pool.query(query);
+    // Připojení k MongoDB, pokud již není připojeno
+    if (mongoose.connection.readyState !== 1) {
+      await mongoose.connect(process.env.MONGODB_URI, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true
+      });
+    }
+
+    // Získání modelu uživatele
+    const Uzivatel = mongoose.model('Uzivatel');
+    
+    // Načtení všech uživatelů
+    const uzivatele = await Uzivatel.find().sort('_id');
     
     // Formátování výsledků jako ASCII tabulka
     let tableOutput = '';
@@ -70,11 +83,11 @@ dbrouter.get('/scan', async (req, res) => {
     tableOutput += '+------+------------+--------------------------------------------------------------+\n';
     
     // Řádky tabulky
-    if (result.rows.length === 0) {
+    if (uzivatele.length === 0) {
       tableOutput += '| Žádní uživatelé nebyli nalezeni                                               |\n';
     } else {
-      result.rows.forEach(user => {
-        const id = user.id.toString().padEnd(4);
+      uzivatele.forEach((user, index) => {
+        const id = (index + 1).toString().padEnd(4);
         const jmeno = user.jmeno.padEnd(10);
         const heslo = user.heslo;
         tableOutput += `| ${id} | ${jmeno} | ${heslo} |\n`;
@@ -83,17 +96,14 @@ dbrouter.get('/scan', async (req, res) => {
     
     // Patička tabulky
     tableOutput += '+------+------------+--------------------------------------------------------------+\n';
-    tableOutput += `\nCelkem nalezeno ${result.rows.length} uživatelů.`;
-    
-    // Ukončení spojení s databází
-    await pool.end();
+    tableOutput += `\nCelkem nalezeno ${uzivatele.length} uživatelů.`;
     
     // Nastavení typu odpovědi na plain text a odeslání výsledku
     res.setHeader('Content-Type', 'text/plain; charset=utf-8');
     res.send(tableOutput);
   } catch (err) {
     console.error('Chyba při načítání uživatelů:', err);
-    res.status(500).send(`Chyba při načítání dat z databáze: ${err.message}`);
+    res.status(500).send(`Chyba při načítání dat z MongoDB: ${err.message}`);
   }
 });
 
